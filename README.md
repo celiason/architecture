@@ -16,7 +16,6 @@ This project is licensed under the MIT License.
 ## Links
 
 [fastai](https://www.fast.ai)
-
 [redfin](https://www.redfin.com)
 
 ## Author
