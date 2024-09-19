@@ -1,3 +1,5 @@
+# TODO come up with a better name for this package ('pkg' is not very descriptive)
+
 # create a label function
 def label_func(f):
     import re
