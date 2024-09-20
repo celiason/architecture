@@ -8,9 +8,12 @@
 
 ## Data
 
-Raw data were obtained from Cook County ([link here](https://www.cookcountyassessor.com/ajax/clarity_pin_search/next?provider=neighborhood&town=Oak+Park&town_id=27&neighborhoodCode=100&classification=none&pages=43&page=25&_wrapper_format=drupal_ajax)).
+I obtained residential addresses from the Cook County website ([](https://www.cookcountyassessor.com/ajax/clarity_pin_search/next?provider=neighborhood&town=Oak+Park&town_id=27&neighborhoodCode=100&classification=none&pages=43&page=25&_wrapper_format=drupal_ajax)).
+
+Training images were obtained from a published peer-reviewed article [](https://link.springer.com/chapter/10.1007/978-3-319-10590-1_39)
 
 ## License
+
 This project is licensed under the MIT License.
 
 ## Links
@@ -20,4 +23,6 @@ This project is licensed under the MIT License.
 
 ## Author
 
-Chad M. Eliason
+Chad M. Eliason  
+Field Museum
+
