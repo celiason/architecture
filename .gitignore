@@ -2,3 +2,5 @@
 .DS_Store
 models/architecture_model.pth
 data/raw/arcDataset/**
+images/testing/*
+data/raw/roads/*
