@@ -135,37 +135,32 @@ len(unique_addresses) # 5305
 metadata_df = pd.DataFrame()
 
 # Range of indices to run the search through
-# idx = range(len(unique_addresses))  # all addresses
-idx = range(2867, len(unique_addresses))  # subset of addresses - "debugging mode"
-# 2140 403 error forbidden
+idx = range(len(unique_addresses))  # all addresses
 
-# get images for all addresses
-
+# Get images for all addresses
 for i in tqdm(idx, desc="Processing addresses"):
-
     # Query address
     address = unique_addresses[i]
-
     try:
         # Get the metadata for the address
         df = get_redfin_image(address)
-        
         # Append to metadata DataFrame
         metadata_df = pd.concat([metadata_df, df], ignore_index=True)
-    
     except:
         continue
-    
     # Add a random sleep time between 1 to 3 seconds
     time.sleep(random.uniform(1, 3))
-
-# NB: problems with 897, 1145 (500 restart OK), 2140 (403)
-# I fixed by putting a try/except in the loop
 
 # Save the metadata to a CSV file
 metadata_df.to_csv('../data/interim/redfin_metadata.csv', index=False)
 
-metadata_df.hist(column='home_value', bins=100)
+# Debugging stuff
+
+# Histogram of home values
+# metadata_df.hist(column='home_value', bins=100)
 
 # Get the index of a given address (useful for debugging)
-unique_addresses.index('816 S MAPLE AVE APT 2S')
+# unique_addresses.index('816 S MAPLE AVE APT 2S')
+
+# idx = range(2867, len(unique_addresses))  # subset of addresses - "debugging mode"
+
