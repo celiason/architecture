@@ -60,6 +60,7 @@ numpy==1.26.4
 packaging==24.1
 pandas==2.2.3
 parso==0.8.4
+patsy==0.5.6
 pexpect==4.9.0
 pillow==10.4.0
 platformdirs==4.3.6
@@ -96,6 +97,7 @@ spacy-legacy==3.0.12
 spacy-loggers==1.0.5
 srsly==2.4.8
 stack-data==0.6.3
+statsmodels==0.14.3
 sympy==1.13.3
 thinc==8.2.5
 threadpoolctl==3.5.0
