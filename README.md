@@ -5,10 +5,12 @@
 - [Scraping home images from real estate websites](#scraping-home-images-from-real-estate-websites)
 - [Training the model](#training-the-model)
 - [Model results](#model-results)
-- [Visualizing home types across space](#visualizing-home-types-across-space)
-- [Mapping architectural diversity layers](#mapping-architectural-diversity-layers)
-- [How this differs from previous work](#how-this-differs-from-previous-work)
+- [Visualizing architectural variation](#visualizing-architectural-variation)
+    - [Home types across space](#home-types-across-space)
+    - [Adding architectural diversity layers](#adding-architectural-diversity-layers)
+- [Modeling home values](#modeling-home-values)
 - [Future directions and insights](#future-directions-and-insights)
+- [How this differs from previous work](#how-this-differs-from-previous-work)
 - [References](#references)
 - [License](#license)
 - [Author](#author)
@@ -55,12 +57,14 @@ Here are some examples of homes in the "validation" set classified correctly (gr
 
 ![](reports/figures/learn_results.png)
 
-## Visualizing home types across space
+## Visualizing architectural variation
+
+### Home types across space
 Using this model, I can then predict the types of homes in a given area. Here is a preliminary result showing the types of homes. Different types of homes are shown as different circle colors. You'll notice that there is an obvious break in the middle of the map that corresponds to a major highway running through the area. Other gaps probably correspond to parks or recreational areas.
 
 ![](reports/figures/arch_div_p00_r20_noHM.png)
 
-## Mapping architectural diversity layers
+## Adding architectural diversity layers
 Instead of seeing the actual types of homes predicted by the model, we might want to see how the _diversity_ of homes changes across the town. Are there some areas with more architectural variety that would be exciting to live in?
 
 To accomplish this, what we'll need to do is, for each home, determine the nearby homes and sum up the number of unique home types in that radius. Then, using an interpolation algorithm in the `scipi.interpolate` Python module, we can map this diversity variable across space. Here is the outcome of the process, with background shaded colors correspond to the architectural diversity of nearby homes (i.e., in a 20m radius).
@@ -71,13 +75,18 @@ In the map above, you can see that there 1608 homes predicted as "prairie" style
 
 ![](reports/figures/probability_hist.png)
 
-## How this differs from previous work
-Other researchers have been interested in classifying home architectural types from photos. My project is unique in that it scrapes photos from an area, predicts architectural type, and then employs GIS tools for mapping architectural diversity.
+## Modeling home values
+To understand trends in home values, I used the Redfin last sale price home values in a model with geographic features (latitude, longitude) as well as home type. Below are the results of a linear regression model trained on 3607 data points (homes with price values available). This model was highly significant (P < 0.001) with a Pearson's correlation coefficient _r_ = -0.15. This indicates that, as we get further from the Chicago city center (i.e., West), home values increase.
+
+![](reports/figures/home_value_regression.png)
 
 ## Future directions and insights
 - Test the model with more homes and on different localized data sets to see how well the model performs with different geographic styles in a given architectural type (e.g., California versus Chicago craftsman/bungalow homes)
 - Add a layer of home types could allow a user to take a look at how architecturally interesting an area is
 - Build a webapp where a person can type in a type of home they are interested in and see a density map of that home across a geographic region
+
+## How this differs from previous work
+Other researchers have been interested in classifying home architectural types from photos. My project is unique in that it scrapes photos from an area, predicts architectural type, and then employs GIS tools for mapping architectural diversity.
 
 ## References
 Software:
