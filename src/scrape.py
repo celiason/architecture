@@ -21,12 +21,6 @@ import matplotlib.pyplot as plt
 # setup redfin client
 client = Redfin()
 
-# check errors
-# get_redfin_image(address = "1101 S CLARENCE AV") # OK works fine
-# get_redfin_image(address = "555 LAUREL AVE #524") # OK returns None in DF
-
-# address = "613 S Grove AV"
-
 # function to get an image from a redfin listing
 def get_redfin_image(address):
 

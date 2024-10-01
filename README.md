@@ -71,7 +71,7 @@ To accomplish this, what we'll need to do is, for each home, determine the nearb
 
 ![](reports/figures/arch_div_p00_r20.png)
 
-In the map above, you can see that there 1608 homes predicted as "prairie" style. This might be an artifact of the model, as this style was often confused with other classes. Looking closer at the probabilities (below), we see that the model is less confident in its prediction of prairie and victorian style homes as compared to bungalows (which are primarily >90% in probability levels).
+In the map above, you can see that there are several (1608) homes predicted as "prairie" style. This might be an artifact of the model, as this style was often confused with other classes. Looking closer at the probabilities (below), we see that the model is less confident in its prediction of prairie and victorian style homes as compared to bungalows (which are primarily >90% in probability levels).
 
 ![](reports/figures/probability_hist.png)
 
