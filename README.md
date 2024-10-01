@@ -5,6 +5,7 @@
 - [Scraping home images from real estate websites](#scraping-home-images-from-real-estate-websites)
 - [Training the model](#training-the-model)
 - [Model results](#model-results)
+- [Visualizing home types across space](#visualizing-home-types-across-space)
 - [Mapping architectural diversity layers](#mapping-architectural-diversity-layers)
 - [How this differs from previous work](#how-this-differs-from-previous-work)
 - [Future directions and insights](#future-directions-and-insights)
@@ -29,7 +30,7 @@ I have been interested in architecture since I moved to Oak Park back in 2017. F
 I decided to use Redfin for this project because the website was easily navigable. I obtained over 5000 images for testing. One challenge was that Redfin images were often obscured by trees. In these cases, the probilities were often very low, therefore I removed them from the subsequent visualizations and analyses.
 
 ## Training the model
-To train the `resnet-34` deep learning image classification model (REF) I used the `fastAI` package which is built on the `pyTorch` framework. To train the model, I first obtained 65 home images (52 in the "training" dataset and 13 in the "validation" set) and classified them manually. I only included four home styles:
+To train the `resnet-34` deep learning image classification model I used the `fastAI` package which is built on the `pyTorch` framework. To train the model, I first obtained 65 home images (52 in the "training" dataset and 13 in the "validation" set) and classified them manually. I only included four home styles:
 <!-- Here are the types we're are using for classification: -->
 1. prairie-style (prairie)
 2. Queen Anne victorian (victorian)
@@ -40,7 +41,7 @@ I also obtained an additional image dataset with ~5000 home images classified in
 
  <!-- "American craftsman style", "American Foursquare", "Queen Anne", and "Colonial" types of architecture. This lowered the number of images from XX to XX. -->
 
-Many houses were photographed at weird angles, obscured by trees, or in bad lighting. To account for this, I can use augmentation - that is, warp, transform, skew, change lighting/contrast of images prior to training. This way, when we run the model on real images we can potentially have better results. This has been shown for cases like X and Y. Below are some examples of transformations done on a house image.
+Many houses were photographed at weird angles, obscured by trees, or in bad lighting. To account for this, I can use augmentation - that is, warp, transform, skew, change lighting/contrast of images prior to training. This way, when we run the model on real images we can potentially have better results. <!--This has been shown for cases like X and Y.--> Below are some examples of transformations done on a house image.
 
 ![](reports/figures/warp.jpg)
 
@@ -54,20 +55,19 @@ Here are some examples of homes in the "validation" set classified correctly (gr
 
 ![](reports/figures/learn_results.png)
 
+## Visualizing home types across space
+Using this model, I can then predict the types of homes in a given area. Here is a preliminary result showing the types of homes. Different types of homes are shown as different circle colors. You'll notice that there is an obvious break in the middle of the map that corresponds to a major highway running through the area. Other gaps probably correspond to parks or recreational areas.
+
+![](reports/figures/arch_div_p00_r20_noHM.png)
+
 ## Mapping architectural diversity layers
-Using this model, I can then predict the types of homes in a given area, Oak Park, IL in my case. Here is a preliminary result showing the types of homes. Different types of homes are shown as different circle colors. The background shaded colors correspond to the architectural diversity of nearby homes (i.e., in a 20m radius).
+Instead of seeing the actual types of homes predicted by the model, we might want to see how the _diversity_ of homes changes across the town. Are there some areas with more architectural variety that would be exciting to live in?
 
-<!-- TODO: discuss more the way I did this, what types of approaches for kernel smoothing, etc.
+To accomplish this, what we'll need to do is, for each home, determine the nearby homes and sum up the number of unique home types in that radius. Then, using an interpolation algorithm in the `scipi.interpolate` Python module, we can map this diversity variable across space. Here is the outcome of the process, with background shaded colors correspond to the architectural diversity of nearby homes (i.e., in a 20m radius).
 
-Maybe convert from lat/long to meters? or feet? or blocks??? that would be cool..
+![](reports/figures/arch_div_p00_r20.png)
 
- -->
-
-![](reports/figures/architecture_diversity.png)
-
-In the map above, you can see that there 1608 homes predicted as "prairie" style. This might be an artifact of the model, as this style was often confused with other classes.
-
-Looking closer at the probabilities (below), we see that the model is less confident in its prediction of prairie and victorian style homes as compared to bungalows (which are primarily >90% in probability levels).
+In the map above, you can see that there 1608 homes predicted as "prairie" style. This might be an artifact of the model, as this style was often confused with other classes. Looking closer at the probabilities (below), we see that the model is less confident in its prediction of prairie and victorian style homes as compared to bungalows (which are primarily >90% in probability levels).
 
 ![](reports/figures/probability_hist.png)
 
