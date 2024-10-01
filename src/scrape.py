@@ -25,6 +25,7 @@ client = Redfin()
 # get_redfin_image(address = "1101 S CLARENCE AV") # OK works fine
 # get_redfin_image(address = "555 LAUREL AVE #524") # OK returns None in DF
 
+# address = "613 S Grove AV"
 
 # function to get an image from a redfin listing
 def get_redfin_image(address):
@@ -34,25 +35,27 @@ def get_redfin_image(address):
     # search for the address    
     response = client.search(address + ", Oak Park")
     
+    # TODO clean up these annotations
+
     if response['payload']['sections'][0]['rows'][0]['id'] == '23_null':
+        
         # remove cardinal directions
         address = re.sub(r'\s[NSEW]\.*\s', ' ', address)
         response = client.search(address + ", Oak Park")
 
+    
     try:
-        # check if it has an exact match
+        # check if address has an exact match on Redfin
         url = response['payload']['exactMatch']['url']
         rf_address = response['payload']['exactMatch']['name']
-
-    except:
-
-        try:
-            # if not, take the first suggested match
+    
+    except:    
+        # if not, take the first suggested match
+        try: 
             url = response['payload']['sections'][0]['rows'][0]['url']
             rf_address = response['payload']['sections'][0]['rows'][0]['name']        
-
+        # if there are no matches, return an error
         except:
-            # if there are no matches, return an error
             metadata = {
                 'input': [input_address],
                 'match': [''],
@@ -77,6 +80,12 @@ def get_redfin_image(address):
     # extract IDs for later
     pid = str(initial_info['payload']['propertyId'])
 
+    # get other metadata (estimated price, etc.)
+    try:
+        cost = client.cost_of_home_ownership(property_id=pid)['payload']['homeValue']
+    except:
+        cost = float('nan')
+
     # TODO get other metadata!
     latlon = initial_info['payload']['latLong']
 
@@ -87,12 +96,14 @@ def get_redfin_image(address):
         'latitude': [latlon['latitude']],
         'longitude': [latlon['longitude']],
         'search_url': [url],
-        'image_url': [img]
+        'image_url': [img],
+        'home_value': [cost]
     }
 
     # TODO figure this out
     # client.descriptive_paragraph(url,lid)
 
+    # put into a dataframe
     df = pd.DataFrame(metadata)
 
     file_address = rf_address.replace(' ', '-')
@@ -113,25 +124,48 @@ cook = pd.read_csv("../data/raw/Assessor_-_Parcel_Addresses_20240910.csv")
 
 # get unique addresses
 unique_addresses = set(cook['mailing_address'])
-unique_addresses = [str(x) for x in unique_addresses]
-len(unique_addresses) # 5305 unique addresses
 
+# convert to string
+unique_addresses = [str(x) for x in unique_addresses]
+
+# number of unique addresses
+len(unique_addresses) # 5305
 
 # Initialize an empty DataFrame to store metadata
 metadata_df = pd.DataFrame()
 
+# Range of indices to run the search through
+# idx = range(len(unique_addresses))  # all addresses
+idx = range(2867, len(unique_addresses))  # subset of addresses - "debugging mode"
+# 2140 403 error forbidden
+
 # get images for all addresses
-for address in tqdm(unique_addresses, desc="Processing addresses"):
-    df = get_redfin_image(address)
-    metadata_df = pd.concat([metadata_df, df], ignore_index=True)
+
+for i in tqdm(idx, desc="Processing addresses"):
+
+    # Query address
+    address = unique_addresses[i]
+
+    try:
+        # Get the metadata for the address
+        df = get_redfin_image(address)
+        
+        # Append to metadata DataFrame
+        metadata_df = pd.concat([metadata_df, df], ignore_index=True)
+    
+    except:
+        continue
+    
     # Add a random sleep time between 1 to 3 seconds
     time.sleep(random.uniform(1, 3))
+
+# NB: problems with 897, 1145 (500 restart OK), 2140 (403)
+# I fixed by putting a try/except in the loop
 
 # Save the metadata to a CSV file
 metadata_df.to_csv('../data/interim/redfin_metadata.csv', index=False)
 
-# NB: a common "problem" is that many listings have photos from google maps, so they return an error
+metadata_df.hist(column='home_value', bins=100)
 
-# stopped this at address 603/5305, so I can test the images
-# would've taken about 4 hours to run all 5305 addresses
-
+# Get the index of a given address (useful for debugging)
+unique_addresses.index('816 S MAPLE AVE APT 2S')

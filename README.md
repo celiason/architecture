@@ -55,7 +55,7 @@ Here are some examples of homes in the "validation" set classified correctly (gr
 ![](reports/figures/learn_results.png)
 
 ## Mapping architectural diversity layers
-Using this model, I can then predict the types of homes in a given area, Oak Park, IL in my case. Here is a preliminary result showing the types of homes. Different types of homes are shown as different circle colors. The background shaded colors correspond to the architectural diversity of nearby homes (i.e., in a XX radius).
+Using this model, I can then predict the types of homes in a given area, Oak Park, IL in my case. Here is a preliminary result showing the types of homes. Different types of homes are shown as different circle colors. The background shaded colors correspond to the architectural diversity of nearby homes (i.e., in a 20m radius).
 
 <!-- TODO: discuss more the way I did this, what types of approaches for kernel smoothing, etc.
 
@@ -65,7 +65,9 @@ Maybe convert from lat/long to meters? or feet? or blocks??? that would be cool.
 
 ![](reports/figures/architecture_diversity.png)
 
-In the map above, you can see that there are several (227) homes predicted as "prairie" style. This might be an artifact of the model, as this style was often confused with other classes (see above). Looking closer at the probabilities, we see that the model is less confident in its prediction of prairie and victorian style homes as compared to bungalows (which are primarily >90% in probability levels)/
+In the map above, you can see that there 1608 homes predicted as "prairie" style. This might be an artifact of the model, as this style was often confused with other classes.
+
+Looking closer at the probabilities (below), we see that the model is less confident in its prediction of prairie and victorian style homes as compared to bungalows (which are primarily >90% in probability levels).
 
 ![](reports/figures/probability_hist.png)
 
