@@ -5,9 +5,11 @@
 - [Scraping home images from real estate websites](#scraping-home-images-from-real-estate-websites)
 - [Training the model](#training-the-model)
 - [Model results](#model-results)
+- [Feature engineering](#feature-engineering)
+- [Visualizing architectural variation](#visualizing-architectural-variation)
     - [Home types across space](#home-types-across-space)
     - [Homes types across time](#homes-types-across-time)
-- [Visualizing architectural variation](#visualizing-architectural-variation)
+    - [Adding diversity layers](#adding-diversity-layers)
 - [Modeling home values](#modeling-home-values)
 - [Future directions and insights](#future-directions-and-insights)
 - [How this differs from previous work](#how-this-differs-from-previous-work)
@@ -26,7 +28,6 @@ I have been interested in architecture since I moved to Oak Park back in 2017. F
 - not sure exactly.
 
  -->
-
 
 ## Scraping home images from real estate websites
 I decided to use Redfin for this project because the website was easily navigable. I obtained over 5000 images for testing. One challenge was that Redfin images were often obscured by trees. In these cases, the probilities were often very low, therefore I removed them from the subsequent visualizations and analyses.
@@ -57,6 +58,14 @@ Here are some examples of homes in the "validation" set classified correctly (gr
 
 ![](reports/figures/learn_results.png)
 
+## Feature engineering
+- I borrowed from the field of Ecology to define architectural diversity as the 'alpha' diversity, that is, the number of distinct home types in a given radius
+- Other features (home value, year built) were taken from the Redfin scraped data.
+- Latitude and longitude may also predict home values and architectural styles.
+- Density of homes (exclusion principal? is architectural diversity a result of builders building different home styles or random?)
+
+## Visualizing architectural variation
+
 ### Home types across space
 Using this model, I can then predict the types of homes in a given area. Here is a preliminary result showing the types of homes. Different types of homes are shown as different circle colors. You'll notice that there is an obvious break in the middle of the map that corresponds to a major highway running through the area. Other gaps probably correspond to parks or recreational areas.
 
@@ -71,7 +80,7 @@ We can also visualize this as an animate GIF!
 
 ![](simple_animation.gif)
 
-## Visualizing architectural variation
+### Adding diversity layers
 Instead of seeing the actual types of homes predicted by the model, we might want to see how the _diversity_ of homes changes across the town. Are there some areas with more architectural variety that would be exciting to live in?
 
 To accomplish this, what we'll need to do is, for each home, determine the nearby homes and sum up the number of unique home types in that radius. Then, using an interpolation algorithm in the `scipi.interpolate` Python module, we can map this diversity variable across space. Here is the outcome of the process, with background shaded colors correspond to the architectural diversity of nearby homes (i.e., in a 20m radius).
