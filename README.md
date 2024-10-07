@@ -5,9 +5,9 @@
 - [Scraping home images from real estate websites](#scraping-home-images-from-real-estate-websites)
 - [Training the model](#training-the-model)
 - [Model results](#model-results)
-- [Visualizing architectural variation](#visualizing-architectural-variation)
     - [Home types across space](#home-types-across-space)
-    - [Adding architectural diversity layers](#adding-architectural-diversity-layers)
+    - [Homes types across time](#homes-types-across-time)
+- [Visualizing architectural variation](#visualizing-architectural-variation)
 - [Modeling home values](#modeling-home-values)
 - [Future directions and insights](#future-directions-and-insights)
 - [How this differs from previous work](#how-this-differs-from-previous-work)
@@ -57,14 +57,21 @@ Here are some examples of homes in the "validation" set classified correctly (gr
 
 ![](reports/figures/learn_results.png)
 
-## Visualizing architectural variation
-
 ### Home types across space
 Using this model, I can then predict the types of homes in a given area. Here is a preliminary result showing the types of homes. Different types of homes are shown as different circle colors. You'll notice that there is an obvious break in the middle of the map that corresponds to a major highway running through the area. Other gaps probably correspond to parks or recreational areas.
 
 ![](reports/figures/arch_div_p00_r20_noHM.png)
 
-## Adding architectural diversity layers
+### Homes types across time
+The buildup of the current architectural diversity is clearly not static, as these homes were built over time, with a boom in home-building in the 1920s. Using the predictions output by the neural network, we can look at cumluative buildup of different home styles. Below is a plot showing the cumulative number of homes built over time for a given architectural style. 
+
+![](reports/figures/cumsum_year.png)
+
+We can also visualize this as an animate GIF!
+
+![](simple_animation.gif)
+
+## Visualizing architectural variation
 Instead of seeing the actual types of homes predicted by the model, we might want to see how the _diversity_ of homes changes across the town. Are there some areas with more architectural variety that would be exciting to live in?
 
 To accomplish this, what we'll need to do is, for each home, determine the nearby homes and sum up the number of unique home types in that radius. Then, using an interpolation algorithm in the `scipi.interpolate` Python module, we can map this diversity variable across space. Here is the outcome of the process, with background shaded colors correspond to the architectural diversity of nearby homes (i.e., in a 20m radius).

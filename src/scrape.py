@@ -24,31 +24,30 @@ client = Redfin()
 # function to get an image from a redfin listing
 def get_redfin_image(address):
 
+    # store the input address since we'll be modifying it
     input_address = address
 
     # search for the address    
     response = client.search(address + ", Oak Park")
     
-    # TODO clean up these annotations
-
+    # sometime a fuzzy input address will not return any matches
+    # we can try removing the cardinal directions from the address
     if response['payload']['sections'][0]['rows'][0]['id'] == '23_null':
-        
-        # remove cardinal directions
         address = re.sub(r'\s[NSEW]\.*\s', ' ', address)
         response = client.search(address + ", Oak Park")
 
-    
-    try:
-        # check if address has an exact match on Redfin
+    # check if address has an exact match on Redfin
+    try:        
         url = response['payload']['exactMatch']['url']
         rf_address = response['payload']['exactMatch']['name']
-    
-    except:    
-        # if not, take the first suggested match
+
+    # if not, check if there are any fuzzy matches
+    except:
+        # take the first address 'hit' in the list
         try: 
             url = response['payload']['sections'][0]['rows'][0]['url']
             rf_address = response['payload']['sections'][0]['rows'][0]['name']        
-        # if there are no matches, return an error
+        # if there are no matches, return an empty dataframe
         except:
             metadata = {
                 'input': [input_address],
@@ -59,15 +58,12 @@ def get_redfin_image(address):
                 'search_url': [''],
                 'image_url': ['']
             }
-            
             df = pd.DataFrame(metadata)
-            
-            # output empty data frame
             return df
 
     # get info on the listing
     initial_info = client.initial_info(url)
-    
+
     # get the image URL
     img = initial_info['payload']['preloadImageUrls']
     
@@ -138,6 +134,7 @@ for i in tqdm(idx, desc="Processing addresses"):
     try:
         # Get the metadata for the address
         df = get_redfin_image(address)
+        
         # Append to metadata DataFrame
         metadata_df = pd.concat([metadata_df, df], ignore_index=True)
     except:
@@ -146,7 +143,9 @@ for i in tqdm(idx, desc="Processing addresses"):
     time.sleep(random.uniform(1, 3))
 
 # Save the metadata to a CSV file
-metadata_df.to_csv('../data/interim/redfin_metadata.csv', index=False)
+metadata_df.to_csv('../data/interim/rf_meta.csv', index=False)
+
+####
 
 # Debugging stuff
 
@@ -157,4 +156,3 @@ metadata_df.to_csv('../data/interim/redfin_metadata.csv', index=False)
 # unique_addresses.index('816 S MAPLE AVE APT 2S')
 
 # idx = range(2867, len(unique_addresses))  # subset of addresses - "debugging mode"
-
