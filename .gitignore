@@ -3,4 +3,5 @@
 models/architecture_model.pth
 data/raw/arcDataset/**
 images/testing/*
+images/training/*
 data/raw/roads/*
