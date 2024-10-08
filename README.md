@@ -76,7 +76,7 @@ The buildup of the current architectural diversity is clearly not static, as the
 
 ![](reports/figures/cumsum_year.png)
 
-We can also visualize this as an animate GIF!
+We can also visualize this as an animated GIF!
 
 ![](simple_animation.gif)
 

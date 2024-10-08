@@ -1,12 +1,25 @@
+from sklearn.neighbors import NearestNeighbors
+from scipy.interpolate import griddata
+import numpy as np
+import matplotlib.pyplot as plt
+import geopandas as gpd
+
 def mytest():
     print('testing 1.2.3!!!')
+
+
+# pts = [(1, 1), (2, 2), (3, 3), (4, 4), (5, 5)]
+# plt.plot(*zip(*pts), marker='o', color='r', ls='')
+# nbrs = NearestNeighbors(radius=2)
+# nbrs.fit(pts)
+# nbrs.radius_neighbors()
+# nbrs.radius_neighbors_graph().astype(int).toarray()
+
 
 # Count up the number of distinct houses in a given radius and return a dataframe
 # 1 degree of latitude = 111 km
 # assuming homes are 10 meters apart, 10/111000 = 0.00009 degrees
-def find_unique(df, radius=0.0002, plot=False):
-
-    from sklearn.neighbors import NearestNeighbors
+def find_unique(df, radius=0.0002, plot=False, stratify=True):
 
     # Initialize NearestNeighbors with the specified radius
     nbrs = NearestNeighbors(radius=radius)
@@ -15,13 +28,16 @@ def find_unique(df, radius=0.0002, plot=False):
     nbrs.fit(df[['latitude', 'longitude']].values)
 
     # Function to calc. number of unique home types in a given radius
-    def count_unique_preds_in_radius(row):
+    def count_unique_preds_in_radius(row, stratify=stratify):
         indices = nbrs.radius_neighbors([row[['latitude', 'longitude']]], return_distance=False)[0]
-        unique_predictions = df.iloc[indices]['prediction'].unique()
+        if stratify:
+            unique_predictions = df.iloc[indices]['prediction'].unique()
+        else:
+            unique_predictions = df.iloc[indices]
         return len(unique_predictions)
 
     # Now we can apply the function to each row in the data frame
-    out = df.apply(count_unique_preds_in_radius, axis=1)
+    out = df.apply(count_unique_preds_in_radius, stratify=stratify, axis=1)
 
     # Optional plot (e.g., to check whether radius is suitable)
     if plot:
@@ -32,11 +48,6 @@ def find_unique(df, radius=0.0002, plot=False):
 def plot_arch_map(df,
                   cols={'bungalow': '#003f5c', 'victorian': '#7a5195', 'prairie': '#ef5675', 'foursquare': '#ffa600'},
                   plot_title='Architecture Diversity', file_name=None, radius=0.0002, cmap='bone', heatmap=True, road_col="white"):
-
-    from scipy.interpolate import griddata
-    import numpy as np
-    import matplotlib.pyplot as plt
-    import geopandas as gpd
 
     # Import roads shape files as a GeoDataFrame
     map_df = gpd.read_file('data/raw/roads/Street_Centerlines.shp')
@@ -58,10 +69,8 @@ def plot_arch_map(df,
     fig, ax = plt.subplots(1, figsize=(10,14))
 
     if heatmap:
-        
         # Plot the interpolated data
         plt.imshow(grid_z.T, extent=(min(x), max(x), min(y), max(y)), origin='lower', cmap=cmap, vmin=0, vmax=df['unique_homes_in_radius'].max())
-
         # Add a color bar
         cbar = plt.colorbar(label='Number of unique homes in a 30m radius', shrink=0.25)
 

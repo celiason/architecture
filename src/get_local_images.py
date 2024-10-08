@@ -1,3 +1,6 @@
+# Automatically download photos from historic homes website
+# https://dghistory.org/american-foursquares/
+
 from bs4 import BeautifulSoup
 import requests
 import os
