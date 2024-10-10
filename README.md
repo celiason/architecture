@@ -1,7 +1,10 @@
 # ArchiMap: classifying and mapping architectural diversity of homes
 
 ## Table of contents
-- [Motivation](#motivation)
+- [Introduction](#introduction)
+    - [Motivation](#motivation)
+    - [Objective of the project](#objective-of-the-project)
+    - [How this project differs from other work](#how-this-project-differs-from-other-work)
 - [Scraping home images from real estate websites](#scraping-home-images-from-real-estate-websites)
 - [Training the model](#training-the-model)
 - [Model results](#model-results)
@@ -11,13 +14,15 @@
     - [Homes types across time](#homes-types-across-time)
     - [Adding diversity layers](#adding-diversity-layers)
 - [Modeling home values](#modeling-home-values)
+- [Building a recommendation engine](#building-a-recommendation-engine)
 - [Future directions and insights](#future-directions-and-insights)
-- [How this differs from previous work](#how-this-differs-from-previous-work)
 - [References](#references)
 - [License](#license)
 - [Author](#author)
 
-## Motivation
+## Introduction
+
+### My motivation
 I have been interested in architecture since I moved to Oak Park back in 2017. Frank Lloyd Wright's home (see below) is close to my house and the diverse styles of homes in the area is incredible. While real estate websites like Redfin and Zillow often have ways to filter by number of bedrooms, bathrooms, or cost, something I have not been able to find is a map of architectural diversity by street block. I think that being able to view the diversity of homes in an area you're interested in prior to moving there would be a plus and could benefit real estate companies as well.
 
 ![](docs/Frank_Lloyd_Wright_building,_Oak_Park_2.jpg)
@@ -28,6 +33,17 @@ I have been interested in architecture since I moved to Oak Park back in 2017. F
 - not sure exactly.
 
  -->
+
+### Objective of the project
+Modeling home values is important in automated valuation models (AVMs). Many of these models (e.g., Vo 2014, https://api.semanticscholar.org/CorpusID:150650431) include building features (square footage, lot size, number of bedrooms) and geographical features (latitude, longitude) of individual homes, but not architectural style or coalescent features (e.g., architectural cohesion of a neighborhood or block). The goals of this project are to:
+1. evaluate whether home types can be automatically predicted from images using convoluational neural network (CNN) models,
+2. test if architectural diversity is an important predictor of home values, and 
+3. design a recommendation engine for users to search on distinct home styles or architectural cohesion of a neighborhood
+
+### How this project differs from other work
+Other researchers have been interested in classifying home architectural types from photos. My project is unique in that it scrapes photos from an area, predicts architectural type, and then employs GIS tools for mapping architectural diversity.
+
+Now onto the fun stuff!
 
 ## Scraping home images from real estate websites
 I decided to use Redfin for this project because the website was easily navigable. I obtained over 5000 images for testing. One challenge was that Redfin images were often obscured by trees. In these cases, the probilities were often very low, therefore I removed them from the subsequent visualizations and analyses.
@@ -59,10 +75,11 @@ Here are some examples of homes in the "validation" set classified correctly (gr
 ![](reports/figures/learn_results.png)
 
 ## Feature engineering
-- I borrowed from the field of Ecology to define architectural diversity as the 'alpha' diversity, that is, the number of distinct home types in a given radius
+- __Alpha diversity__: I borrowed from the field of Ecology to define architectural diversity as the 'alpha' diversity, that is, the number of distinct home types in a given radius
+- __Latitude and longitude__ may also predict home values and architectural styles.
+- Home density <!--(exclusion principal? is architectural diversity a result of builders building different home styles or random?) -->
+- __Shannon index__: this is a measure of diversity. For an area that has only two types of objects (say bungalow homes and victorian homes), then the index ranges from 0 (all homes are the same type) to 0.5 (the case where 50% of the homes are bungalow and 50% are victorian)
 - Other features (home value, year built) were taken from the Redfin scraped data.
-- Latitude and longitude may also predict home values and architectural styles.
-- Density of homes (exclusion principal? is architectural diversity a result of builders building different home styles or random?)
 
 ## Visualizing architectural variation
 
@@ -72,7 +89,7 @@ Using this model, I can then predict the types of homes in a given area. Here is
 ![](reports/figures/arch_div_p00_r20_noHM.png)
 
 ### Homes types across time
-The buildup of the current architectural diversity is clearly not static, as these homes were built over time, with a boom in home-building in the 1920s. Using the predictions output by the neural network, we can look at cumluative buildup of different home styles. Below is a plot showing the cumulative number of homes built over time for a given architectural style. 
+The buildup of the current architectural diversity is clearly not static, as these homes were built over time, with a boom in home-building in the "roaring" 1920s. Using the predictions output by the neural network, we can look at cumluative buildup of different home styles. Below is a plot showing the cumulative number of homes by year for a given house style.
 
 ![](reports/figures/cumsum_year.png)
 
@@ -85,24 +102,38 @@ Instead of seeing the actual types of homes predicted by the model, we might wan
 
 To accomplish this, what we'll need to do is, for each home, determine the nearby homes and sum up the number of unique home types in that radius. Then, using an interpolation algorithm in the `scipi.interpolate` Python module, we can map this diversity variable across space. Here is the outcome of the process, with background shaded colors correspond to the architectural diversity of nearby homes (i.e., in a 20m radius).
 
-![](reports/figures/arch_div_p00_r20.png)
+<!-- ![](reports/figures/arch_div_p00_r20.png) -->
+
+![](reports/figures/simpson_index.png)
 
 In the map above, you can see that there are several (n=1608) homes predicted as "prairie" style. This might be an artifact of the model, as this style was often confused with other classes. Looking closer at the probabilities (below), we see that the model is less confident in its prediction of prairie and victorian style homes as compared to bungalows (which are primarily >90% in probability levels).
 
 ![](reports/figures/probability_hist.png)
+
+Here is another map with low-confidence homes (i.e., probabilities lower than 80% in the neural network) removed from the dataset:
+
+![](reports/figures/simpson_index_prob_80.png)
+
+And we can be even more strict and only look at homes with 99% confidence in assigning them to a specific architectural type:
+
+![](reports/figures/simpson_index_prob_99.png)
+
+The plot is noticeably more "patchy" as expected. But the general trend of uneven architectural diversity still remains. We will use this metric later in our regression models of home values.
 
 ## Modeling home values
 To understand trends in home values, I used the Redfin last sale price home values in a model with geographic features (latitude, longitude) as well as home type. Below are the results of a linear regression model trained on 3607 data points (homes with price values available). This model was highly significant (P < 0.001) with a Pearson's correlation coefficient _r_ = -0.15. This indicates that, as we get further from the Chicago city center (i.e., West), home values increase.
 
 ![](reports/figures/home_value_regression.png)
 
+## Building a recommendation engine
+Coming soon...
+
 ## Future directions and insights
 - Test the model with more homes and on different localized data sets to see how well the model performs with different geographic styles in a given architectural type (e.g., California versus Chicago craftsman/bungalow homes)
 - Add a layer of home types could allow a user to take a look at how architecturally interesting an area is
 - Build a webapp where a person can type in a type of home they are interested in and see a density map of that home across a geographic region
 
-## How this differs from previous work
-Other researchers have been interested in classifying home architectural types from photos. My project is unique in that it scrapes photos from an area, predicts architectural type, and then employs GIS tools for mapping architectural diversity.
+
 
 ## References
 Software:

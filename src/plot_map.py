@@ -3,6 +3,7 @@ from scipy.interpolate import griddata
 import numpy as np
 import matplotlib.pyplot as plt
 import geopandas as gpd
+import matplotlib.pyplot as plt
 
 def mytest():
     print('testing 1.2.3!!!')
@@ -45,6 +46,53 @@ def find_unique(df, radius=0.0002, plot=False, stratify=True):
 
     return out.values
 
+# Function to calculate the inverse Simpson's index
+# 1 - sum(p_i^2)
+# where p_i is the proportion of homes of style i in the block
+def simpson_index(x):
+    # Calculate normalized proportions
+    proportions = x.value_counts(normalize=True)
+    # Calculate inverse Simpson's index
+    simpson = 1 - sum(proportions**2)
+    return simpson
+
+# Function to find blocks from a road shapefile
+def get_blocks(shapefile, plot=False):
+
+    import osmnx as ox
+    import geopandas as gpd
+    import matplotlib.pyplot as plt
+    from shapely.ops import polygonize
+    import momepy
+
+    map_df = gpd.read_file(shapefile)
+
+    # Convert from meters to lat/long
+    map_df = map_df.to_crs(epsg=4326)
+
+    # Convert the GeoDataFrame to a networkx graph
+    G = momepy.gdf_to_nx(map_df, approach="primal")
+    G_undirected = G.to_undirected()
+    G_edges_as_gdf = ox.graph_to_gdfs(G_undirected, nodes=False, edges=True)
+    block_faces = list(polygonize(G_edges_as_gdf['geometry']))
+    blocks = gpd.GeoDataFrame(geometry=block_faces)
+
+    # Get size of blocks
+    blocks['size'] = blocks.area
+    
+    if plot:
+        blocks.plot(column='size', edgecolor='k', linewidth=2, alpha=0.5, zorder=1, legend=True, figsize=(10,10))
+
+    return blocks
+
+# Function to check if a given house is in a block
+def assign_block(pt, blocks):
+    from shapely.geometry import Point
+    pt = Point(pt)
+    contains = blocks.contains(pt)
+    return contains[contains].index[0]
+
+# Plotting the map
 def plot_arch_map(df,
                   cols={'bungalow': '#003f5c', 'victorian': '#7a5195', 'prairie': '#ef5675', 'foursquare': '#ffa600'},
                   plot_title='Architecture Diversity', file_name=None, radius=0.0002, cmap='bone', heatmap=True, road_col="white"):
