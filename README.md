@@ -69,7 +69,7 @@ Overall the model did pretty well, predicting 85% home types correctly in the va
 
 ![](reports/figures/confusion_matrix.png)
 
-Here are some examples of homes in the "validation" set classified correctly (green) and incorrectly (red, with predicted type on top and actual type below).
+Here are some examples of homes in the validation set classified correctly (green) and incorrectly (red, with predicted type on top and actual type below).
 
 ![](reports/figures/learn_results.png)
 
@@ -88,11 +88,8 @@ Using this model, I can then predict the types of homes in a given area. Here is
 ![](reports/figures/arch_div_p00_r20_noHM.png)
 
 ### Homes types across time
-The buildup of the current architectural diversity is clearly not static, as these homes were built over time, with a boom in home-building in the "roaring" 1920s. Using the predictions output by the neural network, we can look at cumluative buildup of different home styles. Below is a plot showing the cumulative number of homes by year for a given house style.
-
+The buildup of the current architectural diversity is clearly not static, as these homes were built over time, with a boom in home-building in the "roaring twenties." Using the predictions output by the neural network, we can look at cumluative buildup of different home styles. Below is a plot showing the cumulative number of homes by year for a given house style. We can also visualize this as an animated GIF (check it out [here](simple_animation.gif)).
 ![](reports/figures/cumsum_year.png)
-
-We can also visualize this as an animated GIF (check it out [here](simple_animation.gif))
 
 ### Adding diversity layers
 Instead of seeing the actual types of homes predicted by the model, we might want to see how the _diversity_ of homes changes across the town. Are there some areas with more architectural variety that would be exciting to live in?
@@ -122,6 +119,8 @@ To understand trends in home values, I used the Redfin last sale price home valu
 
 ![](reports/figures/home_value_regression.png)
 
+As an alternative analysis, I also trained a random forest regressor model (80-20 random train-test split) that gave an $\text{R}^2$ = 0.19, meaning that 19% of variation in home values can be explained by a subset of features (latitude, longitude, home type, Simpson index, and year built).
+
 ## Building a recommendation engine
 Coming soon...
 
@@ -129,8 +128,7 @@ Coming soon...
 - Test the model with more homes and on different localized data sets to see how well the model performs with different geographic styles in a given architectural type (e.g., California versus Chicago craftsman/bungalow homes)
 - Add a layer of home types could allow a user to take a look at how architecturally interesting an area is
 - Build a webapp where a person can type in a type of home they are interested in and see a density map of that home across a geographic region
-
-
+- Include addition features (number of rooms, lot size, home square footage) in the regression models
 
 ## References
 Software:
