@@ -20,9 +20,7 @@
 - [License](#license)
 - [Author](#author)
 
-## Introduction
-
-### My motivation
+## Motivation
 I have been interested in architecture since I moved to Oak Park back in 2017. Frank Lloyd Wright's home (see below) is close to my house and the diverse styles of homes in the area is incredible. While real estate websites like Redfin and Zillow often have ways to filter by number of bedrooms, bathrooms, or cost, something I have not been able to find is a map of architectural diversity by street block. I think that being able to view the diversity of homes in an area you're interested in prior to moving there would be a plus and could benefit real estate companies as well.
 
 ![](docs/Frank_Lloyd_Wright_building,_Oak_Park_2.jpg)
@@ -34,7 +32,7 @@ I have been interested in architecture since I moved to Oak Park back in 2017. F
 
  -->
 
-### Objective of the project
+## Objectives
 Modeling home values is important in automated valuation models (AVMs). Many of these models (e.g., Vo 2014, https://api.semanticscholar.org/CorpusID:150650431) include building features (square footage, lot size, number of bedrooms) and geographical features (latitude, longitude) of individual homes, but not architectural style or coalescent features (e.g., architectural cohesion of a neighborhood or block). The goals of this project are to:
 1. evaluate whether home types can be automatically predicted from images using convoluational neural network (CNN) models,
 2. test if architectural diversity is an important predictor of home values, and 
@@ -45,10 +43,12 @@ Other researchers have been interested in classifying home architectural types f
 
 Now onto the fun stuff!
 
-## Scraping home images from real estate websites
+## Predicting home types from images
+
+### Scraping home images from real estate websites
 I decided to use Redfin for this project because the website was easily navigable. I obtained over 5000 images for testing. One challenge was that Redfin images were often obscured by trees. In these cases, the probilities were often very low, therefore I removed them from the subsequent visualizations and analyses.
 
-## Training the model
+### Training the convolutional neural network (CNN) model
 To train the `resnet-34` deep learning image classification model I used the `fastAI` package which is built on the `pyTorch` framework. To train the model, I first obtained 65 home images (52 in the "training" dataset and 13 in the "validation" set) and classified them manually. I only included four home styles:
 <!-- Here are the types we're are using for classification: -->
 1. prairie-style (prairie)
@@ -64,8 +64,7 @@ Many houses were photographed at weird angles, obscured by trees, or in bad ligh
 
 ![](reports/figures/warp.jpg)
 
-
-## Model results
+### Model results
 Overall the model did pretty well, predicting 85% home types correctly in the validation data set. The confusion matrix below shows how actual home types (validated by a human, me in this case) match up with predicted home types.
 
 ![](reports/figures/confusion_matrix.png)
@@ -78,7 +77,7 @@ Here are some examples of homes in the "validation" set classified correctly (gr
 - __Alpha diversity__: I borrowed from the field of Ecology to define architectural diversity as the 'alpha' diversity, that is, the number of distinct home types in a given radius
 - __Latitude and longitude__ may also predict home values and architectural styles.
 - Home density <!--(exclusion principal? is architectural diversity a result of builders building different home styles or random?) -->
-- __Shannon index__: this is a measure of diversity. For an area that has only two types of objects (say bungalow homes and victorian homes), then the index ranges from 0 (all homes are the same type) to 0.5 (the case where 50% of the homes are bungalow and 50% are victorian)
+- __Simpson index__: The inverse Simpson index is a measure of diversity. For an area that has only two types of objects (say bungalow homes and victorian homes), then the index ranges from 0 (all homes of the same type) to 0.5 (the case where homes are split evenly into 50% bungalow and 50% victorian)
 - Other features (home value, year built) were taken from the Redfin scraped data.
 
 ## Visualizing architectural variation
@@ -93,9 +92,7 @@ The buildup of the current architectural diversity is clearly not static, as the
 
 ![](reports/figures/cumsum_year.png)
 
-We can also visualize this as an animated GIF!
-
-![](simple_animation.gif)
+We can also visualize this as an animated GIF (check it out [here](simple_animation.gif))
 
 ### Adding diversity layers
 Instead of seeing the actual types of homes predicted by the model, we might want to see how the _diversity_ of homes changes across the town. Are there some areas with more architectural variety that would be exciting to live in?
@@ -110,7 +107,7 @@ In the map above, you can see that there are several (n=1608) homes predicted as
 
 ![](reports/figures/probability_hist.png)
 
-Here is another map with low-confidence homes (i.e., probabilities lower than 80% in the neural network) removed from the dataset:
+Here is another map with only homes having probabilities great than 80%:
 
 ![](reports/figures/simpson_index_prob_80.png)
 
