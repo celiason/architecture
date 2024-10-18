@@ -20,6 +20,10 @@
 - [License](#license)
 - [Author](#author)
 
+## Summary
+
+I trained a convolutional neural network (CNN) model to classify home types from images and then mapped the predicted home types across space. I found that home types are clearly related to the latitude and longitude of a home, and that there is a strong relationship between home types and home value. To predict home prices, I next trained a multiple linear regression and then predict prices on a test set. The root mean squared error (RMSE) was $90,551.92, meaning that, on average, the model was off by $90,551.92 in its prediction of home values. Since the average home price in the data set was $437,327.81, this means that the model was off by about 21% on average. Importantly, the model including home type was 7x better than a simpler model without this feature.
+
 ## Motivation
 I have been interested in architecture since I moved to Oak Park back in 2017. Frank Lloyd Wright's home (see below) is close to my house and the diverse styles of homes in the area is incredible. While real estate websites like Redfin and Zillow often have ways to filter by number of bedrooms, bathrooms, or cost, something I have not been able to find is a map of architectural diversity by street block. I think that being able to view the diversity of homes in an area you're interested in prior to moving there would be a plus and could benefit real estate companies as well.
 
@@ -119,7 +123,12 @@ To understand trends in home values, I used the Redfin last sale price home valu
 
 ![](reports/figures/home_value_regression.png)
 
-As an alternative analysis, I also trained a random forest regressor model (80-20 random train-test split) that gave an $\text{R}^2$ = 0.19, meaning that 19% of variation in home values can be explained by a subset of features (latitude, longitude, home type, Simpson index, and year built).
+As an alternative analysis, I also trained a random forest regressor model (80-20 random train-test split) that gave an $\text{R}^2$ = 0.57, meaning that 57% of variation in home values can be explained by a subset of features (latitude, longitude, home type, Simpson index, square footage, yard size, number of bedrooms, number of bathrooms, and the year built).
+
+The root mean squared error (RMSE) was $90,551.92, meaning that, on average, the model was off by $90,551.92 in its prediction of home values. Since the average home price in the data set was $437,327.81, this means that the model was off by about 21% on average.
+
+Taking the log-likelihoods of the full model and comparing it to a simpler model without home type, we see that the full model is 7x better than a simpler model without this feature.
+
 
 ## Building a recommendation engine
 Coming soon...
