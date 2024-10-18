@@ -1,6 +1,6 @@
 # ArchiMap: classifying and mapping architectural diversity of homes
 
-## Table of contents
+<!-- ## Table of contents
 - [Introduction](#introduction)
     - [Motivation](#motivation)
     - [Objective of the project](#objective-of-the-project)
@@ -18,7 +18,10 @@
 - [Future directions and insights](#future-directions-and-insights)
 - [References](#references)
 - [License](#license)
-- [Author](#author)
+- [Author](#author) -->
+
+
+<!-- This code imports a table of contents (TOC) into the README file. The TOC is generated based on the headings in the file. The depth of the TOC is set from 1 to 6, meaning it will include headings from level 1 to level 6. The TOC is not ordered, meaning it will not be numbered. -->
 
 ## Summary
 
