@@ -14,7 +14,6 @@
     - [Home Types Across Time](#home-types-across-time)
     - [Adding Diversity Layers](#adding-diversity-layers)
 - [Modeling Home Values](#modeling-home-values)
-- [Building a Recommendation Engine](#building-a-recommendation-engine)
 - [Future Directions](#future-directions)
 - [References](#references)
 - [License](#license)
@@ -68,16 +67,21 @@ Many houses were photographed at weird angles, obscured by trees, or in bad ligh
 ### Model results
 
 Overall the model did pretty well, predicting over 85% home types correctly in the validation data set. The confusion matrix below shows how actual home types (validated by a human, me in this case) match up with predicted home types.
+
 ![](reports/figures/confusion_matrix.png)
 
 Here are some examples of homes in the validation set classified correctly (green) and incorrectly (red, with predicted type on top and actual type below).
+
 ![](reports/figures/learn_results.png)
 
 ## Feature engineering
 
+- __House price__: I fit models without log-transformation and looked at quantile-quantile plots to check normality of the model residuals. Generally, the residuals were normally distributed so I used raw home prices as the response variable in the model.
 - __Alpha diversity__: I borrowed from the field of Ecology to define architectural diversity as the 'alpha' diversity, that is, the number of distinct home types in a given radius (i.e., a neighborhood block)
 - __Home density__: I calculate the number of homes in a one block radius to get a feature that captures the density of homes in an area, with the idea being that denser neighborhood should drive up home prices due to accessibility to nearby parks and events. <!--(exclusion principal? is architectural diversity a result of builders building different home styles or random?) -->
 - __Inverse Simpson index__: The inverse Simpson index is a measure of diversity ranging from 0 to 1. For an area that has only two types of objects (say bungalow homes and victorian homes), the index ranges from 0 (all homes of the same type) to 0.5 (the case where homes are split evenly into 50% bungalow and 50% victorian). The prediction would be that home prices would increase with the Simpson index.
+- __Home types__: I used `pd.get_dummies()` to create binary variables for home types (i.e., bungalow: yes or no)
+- __Home type probability__: Since many home types were predicted with low probabilities by the CNN, I wanted to account for this in my model. I used weighted least squares regression (WLS) with `var_weights = df['probability']` in the `glm` function.
 <!-- - Other features (home value, year built, number of bedrooms, number of bathrooms, square footage, lot size) were taken from the Redfin scraped data. -->
 <!-- - __Latitude and longitude__ may also predict home values and architectural styles -->
 
@@ -123,20 +127,22 @@ And we can be even more strict and only look at homes with 99% confidence in ass
 
 The plot is noticeably more "patchy" as expected. But the general trend of uneven architectural diversity still remains. We will use this metric later in our regression models of home values.
 
-## Modeling home values
+## Modeling home prices
 
 To understand trends in home values, I used the Redfin last sale price home values. Below are the results of a linear regression model trained on 3607 data points (homes with price values available). This model was highly significant (P < 0.001) with a Pearson's correlation coefficient _r_ = -0.15. This indicates that, as we get further from the Chicago city center (i.e., West), home values increase.
 
 ![](reports/figures/home_value_regression.png)
 
-I next fit several multiple regression models using `glm` from `statsmodels`, including models with and without home type, and ones with and without the Simpson Index. The best model (as determined from the lowest AIC score) was the model with Simpson Index and home type. The root mean squared error (RMSE) of this model was $90,551.92, meaning that, on average, the model was off by $90,551.92 in its prediction of home values. Since the average home price in the data set was $437,327.81, we can estimate that the model was off by about 21\% on average.
+I next fit several multiple regression models using `glm` from `statsmodels`, including models with and without home type, and ones with and without the Simpson Index. The best model (as determined from the lowest AIC score) was the model with Simpson Index and home type. The root mean squared error (RMSE) of this model was $90,551.92, meaning that, on average, the model was off by $90,551.92 in its prediction of home values. Since the average home price in the data set was $437,327.81, we can estimate that the model was off by about 21\% on average. Taking the log-likelihoods of the full model and comparing it to the simpler model without home type, we see that the full model is 5x better than a simpler model without this feature.
 
-Taking the log-likelihoods of the full model and comparing it to the simpler model without home type, we see that the full model is 7x better than a simpler model without this feature.
+<!-- As an alternative analysis, I also trained a random forest regressor model (80/20 randomized train-test split) that gave an $\text{R}^2$ = 0.57 on the test data, meaning that 57% of variation in home values can be explained by the focal subset of features. -->
 
-As an alternative analysis, I also trained a random forest regressor model (80/20 randomized train-test split) that gave an $\text{R}^2$ = 0.57 on the test data, meaning that 57% of variation in home values can be explained by the focal subset of features.
+Below, is a waterfall plot showing the relative effects of different features on the final home price of $476,965.85. The main reason the price is higher than the average value ($457,781.69) is the number of bathrooms (3). The lower latitude has a negative effect on the home price.
 
-## Building a recommendation engine
-Coming soon...
+![](reports/figures/shap_waterfall_plot.png)
+
+<!-- ## Building a recommendation engine
+Coming soon... -->
 
 ## Future directions
 - Test the model with more homes and on different localized data sets to see how well the model performs with different geographic styles in a given architectural type (e.g., California versus Chicago craftsman/bungalow homes)
