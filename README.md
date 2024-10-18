@@ -85,8 +85,11 @@ Using this model, I can then predict the types of homes in a given area. Here is
 ![](reports/figures/arch_div_p00_r20_noHM.png)
 
 ### Homes types across time
-The buildup of the current architectural diversity is clearly not static, as these homes were built over time, with a boom in home-building in the "roaring twenties." Using the predictions output by the neural network, we can look at cumluative buildup of different home styles. Below is a plot showing the cumulative number of homes by year for a given house style. We can also visualize this as an animated GIF (check it out [here](simple_animation.gif)).
+The buildup of the current architectural diversity is clearly not static, as these homes were built over time, with a boom in home-building in the "roaring twenties." Using the predictions output by the neural network, we can look at cumluative buildup of different home styles. Below is a plot showing the cumulative number of homes by year for a given house style.
 ![](reports/figures/cumsum_year.png)
+
+We can also visualize this as an animated GIF. Here the points are gradually built up over time, year-by-year. You'll clearly see the home building boom in the 1920s in the animation. <!-- (check it out [here](simple_animation.gif)). -->
+![](simple_animation.gif)
 
 ### Adding diversity layers
 Instead of seeing the actual types of homes predicted by the model, we might want to see how the _diversity_ of homes changes across the town. Are there some areas with more architectural variety that would be exciting to live in?
