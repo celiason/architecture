@@ -21,7 +21,7 @@
 - [Author](#author) -->
 
 
-<!-- This code imports a table of contents (TOC) into the README file. The TOC is generated based on the headings in the file. The depth of the TOC is set from 1 to 6, meaning it will include headings from level 1 to level 6. The TOC is not ordered, meaning it will not be numbered. -->
+@import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false}
 
 ## Summary
 
