@@ -1,31 +1,26 @@
 # ArchiMap: classifying and mapping architectural diversity of homes
 
-<!-- ## Table of contents
+## Table of Contents
+- [Summary](#summary)
 - [Introduction](#introduction)
-    - [Motivation](#motivation)
-    - [Objective of the project](#objective-of-the-project)
-    - [How this project differs from other work](#how-this-project-differs-from-other-work)
-- [Scraping home images from real estate websites](#scraping-home-images-from-real-estate-websites)
-- [Training the model](#training-the-model)
-- [Model results](#model-results)
-- [Feature engineering](#feature-engineering)
-- [Visualizing architectural variation](#visualizing-architectural-variation)
-    - [Home types across space](#home-types-across-space)
-    - [Homes types across time](#homes-types-across-time)
-    - [Adding diversity layers](#adding-diversity-layers)
-- [Modeling home values](#modeling-home-values)
-- [Building a recommendation engine](#building-a-recommendation-engine)
-- [Future directions and insights](#future-directions-and-insights)
+- [Predicting Home Types from Images](#predicting-home-types-from-images)
+    - [Scraping Home Images from Real Estate Websites](#scraping-home-images-from-real-estate-websites)
+    - [Training the Model](#training-the-model)
+    - [Model Results](#model-results)
+- [Feature Engineering](#feature-engineering)
+- [Visualizing Architectural Variation](#visualizing-architectural-variation)
+    - [Home Types Across Space](#home-types-across-space)
+    - [Home Types Across Time](#home-types-across-time)
+    - [Adding Diversity Layers](#adding-diversity-layers)
+- [Modeling Home Values](#modeling-home-values)
+- [Building a Recommendation Engine](#building-a-recommendation-engine)
+- [Future Directions](#future-directions)
 - [References](#references)
 - [License](#license)
-- [Author](#author) -->
-
-
-@import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false}
+- [Author](#author)
 
 ## Summary
-
-I trained a convolutional neural network (CNN) model to classify home types from images and then mapped the predicted home types across space. I found that home types are clearly related to the latitude and longitude of a home, and that there is a strong relationship between home types and home value. To predict home prices, I next trained a multiple linear regression and then predict prices on a test set. The root mean squared error (RMSE) was $90,551.92, meaning that, on average, the model was off by $90,551.92 in its prediction of home values. Since the average home price in the data set was $437,327.81, this means that the model was off by about 21% on average. Importantly, the model including home type was 7x better than a simpler model without this feature.
+Modeling home values is important in automated valuation models (AVMs). Many of these models (e.g., Vo 2014, https://api.semanticscholar.org/CorpusID:150650431) include building features (square footage, lot size, number of bedrooms) and geographical features (latitude, longitude) of individual homes, but not architectural style or coalescent features (e.g., architectural cohesion of a neighborhood or block). To test whether home type is important in predicting home prices, I trained a convolutional neural network (CNN) model to classify home types from images and then mapped the predicted home types across space. I found that home types are clearly related to the latitude and longitude of a home, and that there is a strong relationship between home types and home value. To predict home prices, I next trained a multiple linear regression and then predict prices on a test set. The root mean squared error (RMSE) was $90,552, meaning that, on average, the model was off by $90,552 in its prediction of home values. Since the average home price in the data set was $437,328, this means that the model was off by about 21% on average. Importantly, the model including home type was 7x better than a simpler model without this feature (RMSE was $91,473). Other researchers have been interested in classifying home architectural types from photos. This project is unique in that it scrapes photos from an area, predicts architectural type, and then employs GIS tools for mapping architectural diversity.
 
 ## Motivation
 I have been interested in architecture since I moved to Oak Park back in 2017. Frank Lloyd Wright's home (see below) is close to my house and the diverse styles of homes in the area is incredible. While real estate websites like Redfin and Zillow often have ways to filter by number of bedrooms, bathrooms, or cost, something I have not been able to find is a map of architectural diversity by street block. I think that being able to view the diversity of homes in an area you're interested in prior to moving there would be a plus and could benefit real estate companies as well.
@@ -39,16 +34,10 @@ I have been interested in architecture since I moved to Oak Park back in 2017. F
 
  -->
 
-## Objectives
-Modeling home values is important in automated valuation models (AVMs). Many of these models (e.g., Vo 2014, https://api.semanticscholar.org/CorpusID:150650431) include building features (square footage, lot size, number of bedrooms) and geographical features (latitude, longitude) of individual homes, but not architectural style or coalescent features (e.g., architectural cohesion of a neighborhood or block). The goals of this project are to:
+The goals of this project are to:
 1. evaluate whether home types can be automatically predicted from images using convoluational neural network (CNN) models,
 2. test if architectural diversity is an important predictor of home values, and 
 3. design a recommendation engine for users to search on distinct home styles or architectural cohesion of a neighborhood
-
-### How this project differs from other work
-Other researchers have been interested in classifying home architectural types from photos. My project is unique in that it scrapes photos from an area, predicts architectural type, and then employs GIS tools for mapping architectural diversity.
-
-Now onto the fun stuff!
 
 ## Predicting home types from images
 
@@ -57,7 +46,8 @@ I decided to use Redfin for this project because the website was easily navigabl
 
 ### Training the convolutional neural network (CNN) model
 To train the `resnet-34` deep learning image classification model I used the `fastAI` package which is built on the `pyTorch` framework. To train the model, I first obtained 65 home images (52 in the "training" dataset and 13 in the "validation" set) and classified them manually. I only included four home styles:
-<!-- Here are the types we're are using for classification: -->
+
+Here are the types we're are using for classification:
 1. prairie-style (prairie)
 2. Queen Anne victorian (victorian)
 3. Chicago bungalow (bungalow)
@@ -85,7 +75,7 @@ Here are some examples of homes in the validation set classified correctly (gree
 - __Latitude and longitude__ may also predict home values and architectural styles.
 - Home density <!--(exclusion principal? is architectural diversity a result of builders building different home styles or random?) -->
 - __Simpson index__: The inverse Simpson index is a measure of diversity. For an area that has only two types of objects (say bungalow homes and victorian homes), then the index ranges from 0 (all homes of the same type) to 0.5 (the case where homes are split evenly into 50% bungalow and 50% victorian)
-- Other features (home value, year built) were taken from the Redfin scraped data.
+- Other features (home value, year built, number of bedrooms, number of bathrooms, square footage, lot size) were taken from the Redfin scraped data.
 
 ## Visualizing architectural variation
 
@@ -136,7 +126,7 @@ Taking the log-likelihoods of the full model and comparing it to a simpler model
 ## Building a recommendation engine
 Coming soon...
 
-## Future directions and insights
+## Future directions
 - Test the model with more homes and on different localized data sets to see how well the model performs with different geographic styles in a given architectural type (e.g., California versus Chicago craftsman/bungalow homes)
 - Add a layer of home types could allow a user to take a look at how architecturally interesting an area is
 - Build a webapp where a person can type in a type of home they are interested in and see a density map of that home across a geographic region
