@@ -147,7 +147,7 @@ Coming soon... -->
 ## Future directions
 - Test the model with more homes and on different localized data sets to see how well the model performs with different geographic styles in a given architectural type (e.g., California versus Chicago craftsman/bungalow homes)
 - Add a layer of home types could allow a user to take a look at how architecturally interesting an area is
-- Build a webapp where a person can type in a type of home they are interested in and see a density map of that home across a geographic region
+- Build a webapp where a user can type in a type of home they are interested in and see a density map of that home across a geographic region
 - Finetune the regression model (i.e., include additional engineered features, optimize training)
 - Train the CNN with more images
 
